@@ -20,7 +20,7 @@ export async function getMetaFieldValue(orderId) {
     console.log("cc"+res.errors?.[0].message);
     throw new Error(res.errors?.[0].message);
   } else{
-    console.log("ff");
+    console.log("ffwww");
     throw new Error("No Data Found.");
   }
 }
