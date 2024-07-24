@@ -1,4 +1,6 @@
 {
   "name": "Resend Invoice",
-  "message": "Are you sure you want to resend the invoice to the customer's email address?"
+  "message": "Are you sure you want to resend the invoice to the customer's email address?",
+  "successMessage": "Action was successful!",
+  "errorMessage": "Something went wrong."
 }

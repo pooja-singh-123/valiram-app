@@ -1,4 +1,6 @@
 {
   "name": "order-invoice-generate",
-  "message": "Bienvenue dans l'extension {{TARGET}}!"
+  "message": "Bienvenue dans l'extension {{TARGET}}!",
+  "successMessage": "Action was successful!",
+  "errorMessage": "Something went wrong."
 }

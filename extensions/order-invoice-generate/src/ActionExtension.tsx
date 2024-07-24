@@ -8,11 +8,13 @@ import {
   Text,
   Banner,
 } from '@shopify/ui-extensions-react/admin';
-import { getMetaFieldValue } from "./utils";
+import { getMetaFieldValue, getEmail, sendEmail } from "./utils";
 
 // The target used here must match the target used in the extension's toml file (./shopify.extension.toml)
 // const TARGET = 'admin.product-details.action.render';
 const TARGET = 'admin.order-details.action.render';
+// var path = require('path');
+// var handlebars = require('handlebars');
 
 export default reactExtension(TARGET, () => <App />);
 
@@ -23,24 +25,40 @@ function App() {
 
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [toast, setToast] = useState(null);
+  const [metaValue, setMetaValue] = useState([]);
+  const [orderEmail, setOrderEmail] = useState([]);
+
+  useEffect(() => {
+    getMetaFieldValue(data.selected[0].id).then(metaVal => setMetaValue(metaVal || []));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    getEmail(data.selected[0].id).then(email => setOrderEmail(email || []));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSubmit = async () => {
     try{
-      const response = await getMetaFieldValue(data.selected[0].id);
-      console.log("dd"+response);
+      const QRValue = await getMetaFieldValue(data.selected[0].id);
+      const orderEmail = await getEmail(data.selected[0].id);
+      console.log("qq"+orderEmail);
+      // const templatePath = path.join(__dirname, '../templates', `sendInvoice.hbs`);
+      // console.log(templatePath);
+      
       // const response = false;
-      if(response) {
-        setSuccessMessage('Action was successful!');
+      if(QRValue) {
+        // const emailTemplate = 
+        // const response = await sendEmail(orderEmail,'Resend Invoice', 'Email successfully Sent');
+        setSuccessMessage(i18n.translate('successMessage'));
         setErrorMessage('');
       } else {
-        throw new Error('Something went wrong.');
+        setSuccessMessage('');
+        throw new Error(i18n.translate('errorMessage'));
       }
-      setToast({ content: 'Action completed successfully!', error: false });
     } catch (error) {
       setSuccessMessage('');
-      setErrorMessage('Something went wrong.');
-      setToast({ content: 'Something went wrong. Please try again.', error: true });
+      setErrorMessage(i18n.translate('errorMessage'));
     }
   };
 
