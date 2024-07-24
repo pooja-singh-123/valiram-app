@@ -24,7 +24,7 @@ export async function getMetaFieldValue(orderId) {
 
 export async function getEmail(orderId) {
   // This example uses metafields to store the data. For more information, refer to https://shopify.dev/docs/apps/custom-data/metafields.
-  console.log(orderId);
+
   const res = await makeGraphQLQuery(
     `query Order($id: ID!) {
         order(id: $id) {
@@ -84,7 +84,7 @@ export async function sendEmail(customerEmail, subject, message) {
       }]
     })
   });
-  console.log(response);
+
   if (!response.ok) {
     throw new Error(`Failed to send email: ${response.statusText}`);
   }

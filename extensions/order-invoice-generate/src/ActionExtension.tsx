@@ -13,7 +13,7 @@ import { getMetaFieldValue, getEmail, sendEmail } from "./utils";
 // The target used here must match the target used in the extension's toml file (./shopify.extension.toml)
 // const TARGET = 'admin.product-details.action.render';
 const TARGET = 'admin.order-details.action.render';
-// var path = require('path');
+var path = require('path');
 // var handlebars = require('handlebars');
 
 export default reactExtension(TARGET, () => <App />);
@@ -42,9 +42,9 @@ function App() {
     try{
       const QRValue = await getMetaFieldValue(data.selected[0].id);
       const orderEmail = await getEmail(data.selected[0].id);
-      console.log("qq"+orderEmail);
-      // const templatePath = path.join(__dirname, '../templates', `sendInvoice.hbs`);
-      // console.log(templatePath);
+
+      const templatePath = path.join(__dirname, '../templates', `sendInvoice.hbs`);
+      console.log(templatePath);
       
       // const response = false;
       if(QRValue) {
