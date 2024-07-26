@@ -8,13 +8,13 @@ import {
   Text,
   Banner,
 } from '@shopify/ui-extensions-react/admin';
-import { getMetaFieldValue, getEmail, sendEmail } from "./utils";
+import { getMetaFieldValue, getOrderData, callMailAPI } from "./utils";
+
 
 // The target used here must match the target used in the extension's toml file (./shopify.extension.toml)
 // const TARGET = 'admin.product-details.action.render';
 const TARGET = 'admin.order-details.action.render';
-var path = require('path');
-// var handlebars = require('handlebars');
+
 
 export default reactExtension(TARGET, () => <App />);
 
@@ -26,7 +26,7 @@ function App() {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [metaValue, setMetaValue] = useState([]);
-  const [orderEmail, setOrderEmail] = useState([]);
+  const [orderData, setOrderData] = useState([]);
 
   useEffect(() => {
     getMetaFieldValue(data.selected[0].id).then(metaVal => setMetaValue(metaVal || []));
@@ -34,27 +34,30 @@ function App() {
   }, []);
 
   useEffect(() => {
-    getEmail(data.selected[0].id).then(email => setOrderEmail(email || []));
+    getOrderData(data.selected[0].id).then(email => setOrderData(email || []));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSubmit = async () => {
     try{
       const QRValue = await getMetaFieldValue(data.selected[0].id);
-      const orderEmail = await getEmail(data.selected[0].id);
-
-      const templatePath = path.join(__dirname, '../templates', `sendInvoice.hbs`);
-      console.log(templatePath);
-      
+      const orderInfo = await getOrderData(data.selected[0].id);
       // const response = false;
       if(QRValue) {
-        // const emailTemplate = 
-        // const response = await sendEmail(orderEmail,'Resend Invoice', 'Email successfully Sent');
-        setSuccessMessage(i18n.translate('successMessage'));
-        setErrorMessage('');
-      } else {
-        setSuccessMessage('');
-        throw new Error(i18n.translate('errorMessage'));
+        const requestBody = JSON.stringify({
+            "orderID": data.selected[0].id,
+            "orderData": orderInfo
+        });
+        // console.log(requestBody);
+        let info = await callMailAPI(requestBody);
+        console.log(info);
+        if(info.ok) {
+          setSuccessMessage(i18n.translate('successMessage'));
+          setErrorMessage('');
+        } else {
+          setSuccessMessage('');
+          throw new Error(i18n.translate('errorMessage'));
+        }
       }
     } catch (error) {
       setSuccessMessage('');

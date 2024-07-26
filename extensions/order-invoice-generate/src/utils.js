@@ -22,14 +22,28 @@ export async function getMetaFieldValue(orderId) {
 }
 
 
-export async function getEmail(orderId) {
+export async function getOrderData(orderId) {
   // This example uses metafields to store the data. For more information, refer to https://shopify.dev/docs/apps/custom-data/metafields.
 
   const res = await makeGraphQLQuery(
     `query Order($id: ID!) {
         order(id: $id) {
           customer {
-              email
+            firstName
+            lastName
+            email
+          }
+          metafield(namespace: "custom", key:"qrcode") {
+            value
+            namespace
+            key
+            reference {
+                ... on MediaImage {
+                    image {
+                        originalSrc
+                    }
+                }
+            }
           }
         }
     }
@@ -37,8 +51,14 @@ export async function getEmail(orderId) {
     { id: orderId }
   );
 
-  if (res?.data?.order?.customer?.email) {
-    return res.data.order.customer.email;
+  if (res?.data?.order) {
+    const response = {
+      firstName: res.data.order.customer.firstName,
+      lastName: res.data.order.customer.lastName,
+      email: res.data.order.customer.email,
+      QRImage: res.data.order.metafield.reference.image.originalSrc
+    }
+    return response;
   } else if(res.errors?.[0].message) {
     throw new Error(res.errors[0].message);
   } else{
@@ -64,30 +84,22 @@ async function makeGraphQLQuery(query, variables) {
   return await res.json();
 }
 
-export async function sendEmail(customerEmail, subject, message) {
-  const apiKey = 'YOUR_SENDGRID_API_KEY';
-  const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      personalizations: [{
-        to: [{ email: customerEmail }]
-      }],
-      from: { email: 'pooja.singh@ranosys.com' },
-      subject: subject,
-      content: [{
-        type: 'text/plain',
-        value: message
-      }]
-    })
-  });
+export async function callMailAPI (requestBody) {
+    try {
+        const response = await fetch('https://gate-hotels-colored-member.trycloudflare.com/send-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: requestBody,
+        });
 
-  if (!response.ok) {
-    throw new Error(`Failed to send email: ${response.statusText}`);
-  }
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response;
 
-  return response.json();
+    } catch (error) {
+        throw new Error(`Request failed: ${error.message}`);
+    }
 }

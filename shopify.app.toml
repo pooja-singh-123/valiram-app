@@ -3,7 +3,7 @@
 client_id = "755d7db35414adb47973aea5df9e2077"
 name = "valiram-custom-app"
 handle = "valiram-custom-app"
-application_url = "https://birthday-degrees-devoted-encoding.trycloudflare.com"
+application_url = "https://cars-atlantic-princess-economic.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "read_content,read_customers,read_merchant_managed_fulfillment_orders,r
 
 [auth]
 redirect_urls = [
-  "https://birthday-degrees-devoted-encoding.trycloudflare.com/auth/callback",
-  "https://birthday-degrees-devoted-encoding.trycloudflare.com/auth/shopify/callback",
-  "https://birthday-degrees-devoted-encoding.trycloudflare.com/api/auth/callback"
+  "https://cars-atlantic-princess-economic.trycloudflare.com/auth/callback",
+  "https://cars-atlantic-princess-economic.trycloudflare.com/auth/shopify/callback",
+  "https://cars-atlantic-princess-economic.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
